@@ -1,7 +1,6 @@
-package card
+package cards
 
 import (
-	"errors"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/paymentintent"
 )
@@ -32,15 +31,15 @@ func (c *Card) CreatePaymentIntent(currency string, amount int) (*stripe.Payment
 		Amount:   stripe.Int64(int64(amount)),
 		Currency: stripe.String(currency),
 	}
+
 	//params.AddMetadata("key", "value")
+
 	pi, err := paymentintent.New(params)
 	if err != nil {
 		msg := ""
-		var stripeErr *stripe.Error
-		if errors.As(err, &stripeErr) {
-			msg = stripeErr.Msg
+		if stripeErr, ok := err.(*stripe.Error); ok {
+			msg = cardErrorMessage(stripeErr.Code)
 		}
-
 		return nil, msg, err
 	}
 	return pi, "", nil
