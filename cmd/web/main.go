@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/joho/godotenv"
 	"html/template"
 	"log"
 	"net/http"
@@ -58,6 +59,10 @@ func main() {
 
 	flag.Parse()
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Err Load env: %s", err)
+	}
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
 	cfg.stripe.secret = os.Getenv("STRIPE_SECRET")
 
@@ -74,7 +79,7 @@ func main() {
 		version:       version,
 	}
 
-	err := app.serve()
+	err = app.serve()
 	if err != nil {
 		app.errorLog.Println(err)
 		log.Fatal(err)
